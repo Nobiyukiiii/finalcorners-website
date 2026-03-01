@@ -1,18 +1,6 @@
 /**
  * ══════════════════════════════════════════════
- *  Final Corners — News Module  (v2)
- *  js/news.js
- *
- *  Drives /news/index.html dengan layout:
- *    • #news-featured  → artikel pertama (hero card)
- *    • #news-grid      → artikel sisanya (3-col grid)
- *    • #news-count     → counter jumlah artikel
- *
- *  Backward-compatible: jika #news-featured tidak
- *  ada (halaman lama), semua artikel masuk #news-grid.
- *
- *  Load order:
- *    config.js → services.js → render.js → news.js
+ *  Final Corners — News Module  (v2.1 FIXED STORAGE)
  * ══════════════════════════════════════════════
  */
 
@@ -22,12 +10,12 @@
   const featuredEl = document.getElementById('news-featured');
   const gridEl     = document.getElementById('news-grid');
   const countEl    = document.getElementById('news-count');
-  if (!gridEl) return; // guard: not on a news page
+  if (!gridEl) return;
 
   const hasFeaturedSlot = !!featuredEl;
 
   // ─────────────────────────────────────────────
-  //  Helpers
+  // Helpers
   // ─────────────────────────────────────────────
 
   function esc(s) {
@@ -43,6 +31,26 @@
     return new Date(iso).toLocaleDateString('id-ID', {
       day: 'numeric', month: 'long', year: 'numeric'
     });
+  }
+
+  // 🔥 FIX UTAMA: ambil URL gambar dari storage
+  function getImageUrl(article) {
+
+    // Legacy: sudah full URL
+    if (article.featured_image && article.featured_image.startsWith('http')) {
+      return article.featured_image;
+    }
+
+    // New system: pakai featured_image_path
+    if (article.featured_image_path) {
+      const { data } = supabase.storage
+        .from(CONFIG.STORAGE_BUCKET)
+        .getPublicUrl(article.featured_image_path);
+
+      return data?.publicUrl || null;
+    }
+
+    return null;
   }
 
   function thumbHTML(img, title, cls) {
@@ -68,16 +76,18 @@
   }
 
   // ─────────────────────────────────────────────
-  //  Featured card (hero — first article)
+  // Featured
   // ─────────────────────────────────────────────
 
   function buildFeatured(a) {
     const href  = `/news/article.html?slug=${encodeURIComponent(a.slug)}`;
+    const img   = getImageUrl(a);
+
     return `
       <article itemscope itemtype="https://schema.org/Article">
         ${schemaMeta(a)}
         <a href="${href}" class="news-featured-card" aria-label="${esc(a.title)}">
-          ${thumbHTML(a.featured_image, a.title, 'news-featured-thumb')}
+          ${thumbHTML(img, a.title, 'news-featured-thumb')}
           <div class="news-featured-body">
             <span class="news-featured-date">${formatDate(a.published_at)}</span>
             <h2 class="news-featured-title" itemprop="headline">${esc(a.title)}</h2>
@@ -94,17 +104,19 @@
   }
 
   // ─────────────────────────────────────────────
-  //  Grid card (remaining articles)
+  // Grid
   // ─────────────────────────────────────────────
 
   function buildCard(a, index) {
     const href = `/news/article.html?slug=${encodeURIComponent(a.slug)}`;
     const num  = String(index + 1).padStart(2, '0');
+    const img  = getImageUrl(a);
+
     return `
       <article itemscope itemtype="https://schema.org/Article">
         ${schemaMeta(a)}
         <a href="${href}" class="news-card" aria-label="${esc(a.title)}">
-          ${thumbHTML(a.featured_image, a.title, 'news-card-thumb')}
+          ${thumbHTML(img, a.title, 'news-card-thumb')}
           <div class="news-card-body">
             <span class="news-card-date">${formatDate(a.published_at)}</span>
             <h2 class="news-card-title" itemprop="headline">${esc(a.title)}</h2>
@@ -120,11 +132,6 @@
       </article>`;
   }
 
-  // ─────────────────────────────────────────────
-  //  Fallback card (for old single-grid layout)
-  //  Uses Render.newsCard if available, else buildCard
-  // ─────────────────────────────────────────────
-
   function buildFallbackCard(a, index) {
     if (typeof Render !== 'undefined' && Render.newsCard) {
       return Render.newsCard(a);
@@ -133,45 +140,45 @@
   }
 
   // ─────────────────────────────────────────────
-  //  Fetch & render
+  // Fetch & Render
   // ─────────────────────────────────────────────
 
   try {
     const all      = await Services.getNews({ limit: 30 });
     const articles = all.filter(a => a.status === 'published');
 
-    // Clear skeleton states
     if (featuredEl) featuredEl.innerHTML = '';
     gridEl.innerHTML = '';
 
-    // ── Nothing to show ──────────────────────────────────────────
     if (!articles.length) {
       if (featuredEl) {
         featuredEl.style.display = 'none';
         const featuredSection = document.getElementById('news-featured-section');
         if (featuredSection) featuredSection.style.display = 'none';
       }
+
       gridEl.innerHTML = `<div class="fc-empty" style="grid-column:1/-1">
         Belum ada artikel yang diterbitkan.
       </div>`;
       return;
     }
 
-    // ── New layout: featured + grid ───────────────────────────────
     if (hasFeaturedSlot) {
       featuredEl.innerHTML = buildFeatured(articles[0]);
 
       const rest = articles.slice(1);
+
       if (!rest.length) {
         gridEl.innerHTML = `<div class="fc-empty" style="grid-column:1/-1">
           Tidak ada artikel lain saat ini.
         </div>`;
       } else {
-        rest.forEach((a, i) => gridEl.insertAdjacentHTML('beforeend', buildCard(a, i)));
+        rest.forEach((a, i) =>
+          gridEl.insertAdjacentHTML('beforeend', buildCard(a, i))
+        );
         if (countEl) countEl.textContent = rest.length + ' artikel';
       }
 
-    // ── Legacy layout: all articles in flat grid ──────────────────
     } else {
       articles.forEach((a, i) => {
         gridEl.insertAdjacentHTML('beforeend', buildFallbackCard(a, i));

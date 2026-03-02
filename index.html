@@ -36,22 +36,190 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "MusicGroup",
-    "name": "Final Corners",
-    "url": "https://finalcorners.my.id/",
-    "genre": ["Indie Rock", "Garage Pop"],
-    "foundingDate": "2025",
-    "foundingLocation": { "@type": "Place", "name": "Bandung, Jawa Barat, Indonesia" },
-    "sameAs": [
-      "https://open.spotify.com/artist/4rDeBgp8poxbMi6wTkGu9Q",
-      "https://www.youtube.com/channel/UC7-ArZpxStHd_jCdXos8YYA",
-      "https://www.instagram.com/finalcorners"
-    ]
-  }
-  </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+
+    {
+      "@type": ["MusicGroup", "Organization"],
+      "@id": "https://finalcorners.my.id/#finalcorners",
+      "name": "Final Corners",
+      "alternateName": [
+        "Final Corners Band",
+        "Final Corners Bandung",
+        "Final Corners Indonesia"
+      ],
+      "mainEntityOfPage": {
+        "@id": "https://finalcorners.my.id/#homepage"
+      },
+      "url": "https://finalcorners.my.id/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://finalcorners.my.id/assets/logo.png"
+      },
+      "image": {
+        "@type": "ImageObject",
+        "url": "https://finalcorners.my.id/assets/og-image.jpg"
+      },
+      "description": "Final Corners adalah band indie rock dan garage pop asal Bandung, Indonesia, aktif sejak 2025.",
+      "genre": [
+        "Indie Rock",
+        "Garage Pop",
+        "Indonesian Indie Rock"
+      ],
+      "foundingDate": "2025",
+      "foundingLocation": {
+        "@type": "Place",
+        "name": "Bandung, Jawa Barat, Indonesia"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Indonesia"
+      },
+      "sameAs": [
+        "https://open.spotify.com/artist/4rDeBgp8poxbMi6wTkGu9Q",
+        "https://www.instagram.com/finalcorners",
+        "https://www.youtube.com/channel/UC7-ArZpxStHd_jCdXos8YYA"
+      ],
+      "member": [
+        { "@id": "https://finalcorners.my.id/#person-josh" },
+        { "@id": "https://finalcorners.my.id/#person-arri" },
+        { "@id": "https://finalcorners.my.id/#person-rafly" },
+        { "@id": "https://finalcorners.my.id/#person-rey" },
+        { "@id": "https://finalcorners.my.id/#person-iqbal" }
+      ],
+      "track": [
+        { "@id": "https://finalcorners.my.id/#single-cinta" },
+        { "@id": "https://finalcorners.my.id/#single-waktu" }
+      ]
+    },
+
+    {
+      "@type": "Person",
+      "@id": "https://finalcorners.my.id/#person-josh",
+      "name": "Joshua Nicholas",
+      "jobTitle": "Vocals",
+      "memberOf": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://finalcorners.my.id/#person-arri",
+      "name": "Ari Nurdiman",
+      "jobTitle": "Lead Guitar",
+      "memberOf": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://finalcorners.my.id/#person-rafly",
+      "name": "Maulana Rafly F",
+      "jobTitle": "Drums",
+      "memberOf": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://finalcorners.my.id/#person-rey",
+      "name": "M Bilal Reyhan",
+      "jobTitle": "Guitar",
+      "memberOf": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://finalcorners.my.id/#person-iqbal",
+      "name": "Iqbal Insanul K",
+      "jobTitle": "Lead Guitar",
+      "memberOf": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      }
+    },
+
+    {
+      "@type": "MusicRecording",
+      "@id": "https://finalcorners.my.id/#single-cinta",
+      "name": "Cinta Yang Terlihat Baik",
+      "byArtist": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      },
+      "datePublished": "2025",
+      "duration": "PT3M58S",
+      "url": "https://open.spotify.com/track/78HFiCj20MRrqFvdkauS7a",
+      "sameAs": [
+        "https://open.spotify.com/track/78HFiCj20MRrqFvdkauS7a",
+        "https://www.youtube.com/watch?v=x-rUG_tobpA"
+      ],
+      "inAlbum": {
+        "@type": "MusicAlbum",
+        "@id": "https://finalcorners.my.id/#album-single-cinta",
+        "name": "Cinta Yang Terlihat Baik - Single",
+        "byArtist": {
+          "@id": "https://finalcorners.my.id/#finalcorners"
+        },
+        "datePublished": "2025"
+      }
+    },
+
+    {
+      "@type": "MusicRecording",
+      "@id": "https://finalcorners.my.id/#single-waktu",
+      "name": "Sampai Waktu Menjawab",
+      "byArtist": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      },
+      "datePublished": "2025",
+      "duration": "PT5M41S",
+      "url": "https://open.spotify.com/track/6D2eNNZrhg9EKy0USX5GvC",
+      "sameAs": [
+        "https://open.spotify.com/track/6D2eNNZrhg9EKy0USX5GvC",
+        "https://www.youtube.com/watch?v=igv5NowMToA"
+      ],
+      "inAlbum": {
+        "@type": "MusicAlbum",
+        "@id": "https://finalcorners.my.id/#album-single-waktu",
+        "name": "Sampai Waktu Menjawab - Single",
+        "byArtist": {
+          "@id": "https://finalcorners.my.id/#finalcorners"
+        },
+        "datePublished": "2025"
+      }
+    },
+
+    {
+      "@type": "WebSite",
+      "@id": "https://finalcorners.my.id/#website",
+      "url": "https://finalcorners.my.id/",
+      "name": "Final Corners Official Website",
+      "publisher": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      }
+    },
+
+    {
+      "@type": "WebPage",
+      "@id": "https://finalcorners.my.id/#homepage",
+      "url": "https://finalcorners.my.id/",
+      "name": "Final Corners — Indie Rock Band dari Bandung",
+      "isPartOf": {
+        "@id": "https://finalcorners.my.id/#website"
+      },
+      "about": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      },
+      "mainEntity": {
+        "@id": "https://finalcorners.my.id/#finalcorners"
+      }
+    }
+
+  ]
+}
+</script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

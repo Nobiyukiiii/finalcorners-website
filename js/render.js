@@ -71,70 +71,88 @@ const Render = (() => {
 
   // ── Build release card ────────────────────────
   function releaseCard(r) {
-    const hasVideo   = !!(r.youtube_url && r.youtube_url.trim());
-    const youtubeId  = hasVideo ? (r.youtube_url.match(/[?&]v=([^&]+)/)?.[1] || '') : '';
-    const hasSpotify = !!(r.spotify_url && r.spotify_url.trim());
-    const hasLinks   = hasSpotify || hasVideo;
-    const year       = r.release_date ? new Date(r.release_date).getFullYear() : '';
+  const hasVideo   = !!(r.youtube_url && r.youtube_url.trim());
+  const youtubeId  = hasVideo ? (r.youtube_url.match(/[?&]v=([^&]+)/)?.[1] || '') : '';
+  const hasSpotify = !!(r.spotify_url && r.spotify_url.trim());
+  const hasLinks   = hasSpotify || hasVideo;
+  const year       = r.release_date ? new Date(r.release_date).getFullYear() : '';
 
-    return `
-      <article class="release-card${!hasLinks ? ' release-card--soon' : ''}" 
-        aria-label="${r.title} — ${r.type || 'Single'} Final Corners" 
-        id="track-${r.id}">
+  return `
+    <article class="release-card${r.status === 'upcoming' ? ' release-card--soon' : ''}" 
+      aria-label="${r.title} — ${r.type || 'Single'} Final Corners" 
+      id="track-${r.id}">
 
-        <div class="release-cover-wrap">
-          ${r.cover_url
-            ? `<img src="${r.cover_url}" alt="Final Corners — ${r.title} cover art"
-                class="release-cover" width="600" height="600"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+      <div class="release-cover-wrap">
+        ${r.cover_url
+          ? `<img src="${r.cover_url}" alt="Final Corners — ${r.title} cover art"
+              class="release-cover" width="600" height="600"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+          : ''}
+
+        <div class="release-cover-placeholder" style="display:${r.cover_url ? 'none' : 'flex'};" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <span>Cover Image</span>
+        </div>
+
+        ${r.status === 'upcoming'
+          ? `<div class="release-coming-soon"
+                data-release="${r.release_date}"
+                data-spotify="${r.spotify_url || ''}"
+                data-presave="${r.presave_url || ''}">
+                
+                <span class="release-coming-soon-badge">Coming Soon</span>
+
+                <div class="release-countdown">
+                  <span class="cd-days">00</span>d
+                  <span class="cd-hours">00</span>h
+                  <span class="cd-minutes">00</span>m
+                  <span class="cd-seconds">00</span>s
+                </div>
+
+                ${r.presave_url
+                  ? `<a href="${r.presave_url}" target="_blank" class="release-presave-btn">
+                       Pre-Save
+                     </a>`
+                  : ''}
+
+             </div>`
+          : youtubeId
+            ? `<button class="release-play-btn"
+                data-video-id="${youtubeId}"
+                data-title="${r.title}"
+                data-meta="Final Corners · ${r.type || 'Single'} · ${year}"
+                data-spotify="${r.spotify_url || ''}"
+                aria-label="Tonton video ${r.title}">
+                <div class="release-play-icon">
+                  <svg viewBox="0 0 24 24">
+                    <polygon points="5,3 19,12 5,21"/>
+                  </svg>
+                </div>
+                <span class="release-play-label">Tonton Video</span>
+              </button>`
             : ''}
+      </div>
 
-          <div class="release-cover-placeholder" style="display:${r.cover_url ? 'none' : 'flex'};" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="12" r="10"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-            <span>Cover Image</span>
-          </div>
+      <div class="release-body">
+        <p class="release-meta">
+          ${r.type || 'Single'} · ${year || '—'}${r.isrc ? ' · ISRC: ' + r.isrc : ''}
+        </p>
+        <h3 class="release-title">${r.title}</h3>
+        ${r.description ? `<p class="release-desc">${r.description}</p>` : ''}
 
-          ${!hasLinks
-            ? `<div class="release-coming-soon" aria-hidden="true">
-                 <span class="release-coming-soon-badge">Coming Soon</span>
-               </div>`
-            : youtubeId
-              ? `<button class="release-play-btn"
-                  data-video-id="${youtubeId}"
-                  data-title="${r.title}"
-                  data-meta="Final Corners · ${r.type || 'Single'} · ${year}"
-                  data-spotify="${r.spotify_url || ''}"
-                  aria-label="Tonton video ${r.title}">
-                  <div class="release-play-icon">
-                    <svg viewBox="0 0 24 24">
-                      <polygon points="5,3 19,12 5,21"/>
-                    </svg>
-                  </div>
-                  <span class="release-play-label">Tonton Video</span>
-                </button>`
-              : ''}
+        <div class="release-links">
+          ${r.status !== 'upcoming' && hasLinks
+            ? `${hasSpotify ? `<a href="${r.spotify_url}" target="_blank" rel="noopener" class="btn">Spotify</a>` : ''}
+               ${hasVideo   ? `<a href="${r.youtube_url}" target="_blank" rel="noopener" class="btn">YouTube</a>` : ''}`
+            : `<span class="btn release-btn-soon">Segera Hadir</span>`}
         </div>
+      </div>
 
-        <div class="release-body">
-          <p class="release-meta">
-            ${r.type || 'Single'} · ${year || '—'}${r.isrc ? ' · ISRC: ' + r.isrc : ''}
-          </p>
-          <h3 class="release-title">${r.title}</h3>
-          ${r.description ? `<p class="release-desc">${r.description}</p>` : ''}
-
-          <div class="release-links">
-            ${hasLinks
-              ? `${hasSpotify ? `<a href="${r.spotify_url}" target="_blank" rel="noopener" class="btn">Spotify</a>` : ''}
-                 ${hasVideo   ? `<a href="${r.youtube_url}" target="_blank" rel="noopener" class="btn">YouTube</a>` : ''}`
-              : `<span class="btn release-btn-soon">Segera Hadir</span>`}
-          </div>
-        </div>
-
-      </article>`;
-  }
+    </article>`;
+}
 
   // ── Build news card ────────────────────────────
   function newsCard(article) {
@@ -191,10 +209,9 @@ const _shimmerStyle = document.createElement('style');
 _shimmerStyle.textContent = `
   @keyframes fc-shimmer { 0%,100%{opacity:0.4} 50%{opacity:0.7} }
 
-  .release-card--soon {
-    opacity: 0.72;
-    pointer-events: none;
-  }
+.release-card--soon {
+  opacity: 0.9;
+}
 
   .release-coming-soon {
     position: absolute;
@@ -210,5 +227,32 @@ _shimmerStyle.textContent = `
     opacity: 0.45;
     pointer-events: none;
   }
+    .release-coming-soon {
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.release-countdown {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.release-presave-btn {
+  padding: 6px 14px;
+  border: 1px solid white;
+  font-size: 12px;
+  text-decoration: none;
+  color: white;
+  transition: 0.3s;
+}
+
+.release-presave-btn:hover {
+  background: white;
+  color: black;
+}
 `;
+
 document.head.appendChild(_shimmerStyle);
+

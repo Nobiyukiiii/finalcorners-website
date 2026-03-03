@@ -83,6 +83,60 @@
 
     goTo(0);
 
+    // ─────────────────────────────
+// Countdown + Auto Switch
+// ─────────────────────────────
+function initCountdowns() {
+  document.querySelectorAll('.release-coming-soon').forEach(el => {
+
+    const releaseDate = new Date(el.dataset.release).getTime();
+    const spotifyUrl  = el.dataset.spotify;
+
+    if (!releaseDate) return;
+
+    const timer = setInterval(() => {
+
+      const now = new Date().getTime();
+      const distance = releaseDate - now;
+
+      if (distance <= 0) {
+        clearInterval(timer);
+
+        if (spotifyUrl) {
+          el.innerHTML = `
+            <a href="${spotifyUrl}" target="_blank"
+               class="release-presave-btn">
+              Listen on Spotify
+            </a>
+          `;
+        } else {
+          el.innerHTML = `
+            <span class="release-coming-soon-badge">
+              Now Available
+            </span>
+          `;
+        }
+
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      el.querySelector('.cd-days').textContent = days;
+      el.querySelector('.cd-hours').textContent = hours;
+      el.querySelector('.cd-minutes').textContent = minutes;
+      el.querySelector('.cd-seconds').textContent = seconds;
+
+    }, 1000);
+
+  });
+}
+
+initCountdowns();
+
     // ── Attach video modal listeners ──
     document.querySelectorAll('.release-play-btn').forEach(btn => {
       btn.addEventListener('click', e => {

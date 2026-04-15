@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memuat… — Final Corners</title>
+  <meta name="description" content="">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="">
+  <meta property="og:description" content="">
+  <meta property="og:url" content="">
+  <meta property="og:image" content="https://finalcorners.my.id/assets/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="">
+  <meta name="twitter:description" content="">
+  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0e0c0b;--surface:#161311;--surface2:#1c1815;
+      --border:#2d2723;--border-light:#3d3530;
+      --white:#f0ebe4;--text:#c4bcb2;--text-muted:#7a7168;--text-faint:#4a4440;
+      --accent:#c94b4b;--accent-2:#e06060;
+      --accent-dim:rgba(201,75,75,0.10);--accent-glow:rgba(201,75,75,0.18);
+      --font-logo:'Lilita One',Impact,'Arial Black',sans-serif;
+      --font-body:'Inter','Helvetica Neue',Arial,sans-serif;
+      --header-h:57px;
+      --content-w:700px;
+    }
+
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:2px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+    ::selection{background:var(--accent-dim);color:var(--white)}
+    html{scroll-behavior:smooth}
+    body{background-color:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+
+    /* ── HEADER ───────────────────────────────────────────────── */
+    header{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0.85rem 2.5rem;
+      border-bottom:1px solid var(--border);
+      background:rgba(14,12,11,0.96);backdrop-filter:blur(20px);
+    }
+    .header-logo{display:flex;align-items:center;gap:0.6rem}
+    .header-logo img{width:32px;height:32px;object-fit:contain}
+    .header-logo-text{font-family:var(--font-logo);font-size:1.15rem;color:var(--white);letter-spacing:0.02em}
+    nav{display:flex;gap:2rem;align-items:center}
+    nav a{font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);transition:color 0.2s;font-weight:500}
+    nav a:hover,nav a.active{color:var(--accent)}
+
+    /* ── READ PROGRESS BAR ────────────────────────────────────── */
+    #read-progress{
+      position:fixed;top:var(--header-h);left:0;right:0;z-index:99;
+      height:2px;background:var(--border);
+    }
+    #read-progress-fill{
+      height:100%;width:0%;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      transition:width 0.1s linear;
+    }
+
+    /* ── ARTICLE HERO ─────────────────────────────────────────── */
+    .article-hero{
+      padding-top:calc(var(--header-h) + 2px); /* account for progress bar */
+      border-bottom:1px solid var(--border);
+      position:relative;overflow:hidden;
+    }
+    /* full-bleed featured image */
+    .article-hero-img-wrap{
+      width:100%;
+      aspect-ratio:21/9;
+      overflow:hidden;
+      position:relative;
+      background:var(--surface2);
+    }
+    .article-hero-img-wrap img{
+      width:100%;height:100%;
+      object-fit:cover;display:block;
+    }
+    /* gradient overlay so text on top is readable */
+    .article-hero-img-wrap::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(to bottom,
+        rgba(14,12,11,0) 0%,
+        rgba(14,12,11,0.5) 60%,
+        rgba(14,12,11,0.95) 100%
+      );
+    }
+    /* hero text overlaid on image */
+    .article-hero-text{
+      position:absolute;bottom:0;left:0;right:0;
+      padding:3rem 2.5rem 2.5rem;
+      max-width:calc(var(--content-w) + 5rem);
+      z-index:2;
+    }
+    /* fallback: hero text below when no image */
+    .article-hero--no-img .article-hero-text{
+      position:static;
+      max-width:none;
+      padding:3.5rem 2.5rem 3rem;
+    }
+
+    .article-breadcrumb{
+      display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;
+      font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;
+      color:var(--text-faint);margin-bottom:1.5rem;
+    }
+    .article-breadcrumb a{color:var(--text-faint);transition:color 0.2s}
+    .article-breadcrumb a:hover{color:var(--accent)}
+    .article-breadcrumb-sep{opacity:0.3;font-size:0.6rem}
+
+    .article-tag{
+      display:inline-block;
+      font-size:0.48rem;letter-spacing:0.32em;text-transform:uppercase;
+      color:var(--accent);font-weight:600;
+      border:1px solid var(--accent);
+      padding:0.2rem 0.55rem;
+      margin-bottom:1rem;
+    }
+    .article-title{
+      font-family:var(--font-logo);
+      font-size:clamp(2rem,4.5vw,3.4rem);
+      color:var(--white);
+      line-height:1.1;
+      letter-spacing:-0.01em;
+      margin-bottom:1rem;
+    }
+    .article-byline{
+      display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;
+    }
+    .article-date{
+      font-size:0.52rem;letter-spacing:0.22em;text-transform:uppercase;
+      color:var(--text-faint);
+    }
+    .article-by{
+      font-size:0.52rem;letter-spacing:0.18em;text-transform:uppercase;
+      color:var(--text-faint);
+    }
+    .article-by strong{color:var(--text-muted);font-weight:500}
+
+    /* ── ARTICLE BODY ─────────────────────────────────────────── */
+    .article-body{
+      max-width:var(--content-w);
+      margin:0 auto;
+      padding:3.5rem 2.5rem 5rem;
+    }
+    .article-lead{
+      font-size:1.1rem;
+      line-height:1.85;
+      color:var(--text);
+      font-weight:300;
+      margin-bottom:2.5rem;
+      padding-bottom:2.5rem;
+      border-bottom:1px solid var(--border);
+    }
+    .article-content{
+      font-size:1rem;
+      line-height:2;
+      color:var(--text);
+      font-weight:300;
+    }
+    .article-content p{margin-bottom:1.6rem}
+    .article-content h2{
+      font-family:var(--font-logo);
+      font-size:1.7rem;color:var(--white);
+      margin:3rem 0 1.1rem;line-height:1.2;
+    }
+    .article-content h3{
+      font-family:var(--font-logo);
+      font-size:1.25rem;color:var(--white);
+      margin:2.2rem 0 0.85rem;
+    }
+    .article-content a{
+      color:var(--accent);
+      border-bottom:1px solid var(--accent-dim);
+      transition:border-color 0.2s;
+    }
+    .article-content a:hover{border-color:var(--accent)}
+    .article-content blockquote{
+      border-left:2px solid var(--accent);
+      padding:0.5rem 0 0.5rem 1.75rem;
+      margin:2.5rem 0;
+      color:var(--text-muted);
+      font-style:italic;
+      font-size:1.05rem;
+      line-height:1.85;
+    }
+    .article-content blockquote::before{
+      content:'"';
+      font-family:var(--font-logo);
+      font-size:2.5rem;
+      color:var(--accent);
+      opacity:0.3;
+      display:block;
+      line-height:1;
+      margin-bottom:0.25rem;
+    }
+    .article-content img{
+      width:100%;border:1px solid var(--border);
+      margin:2rem 0;
+    }
+    .article-content ul,
+    .article-content ol{margin:1.2rem 0 1.8rem 1.5rem}
+    .article-content li{margin-bottom:0.5rem}
+    .article-content strong{color:var(--white);font-weight:500}
+    .article-content hr{
+      border:none;
+      border-top:1px solid var(--border);
+      margin:2.5rem 0;
+    }
+
+    /* ── ARTICLE FOOTER ───────────────────────────────────────── */
+    .article-footer{
+      max-width:var(--content-w);
+      margin:0 auto;
+      padding:0 2.5rem 5rem;
+      border-top:1px solid var(--border);
+    }
+    .article-footer-inner{
+      padding-top:2rem;
+      display:flex;align-items:center;justify-content:space-between;
+      flex-wrap:wrap;gap:1rem;
+    }
+    .article-back{
+      display:inline-flex;align-items:center;gap:0.6rem;
+      font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;
+      color:var(--text-muted);font-weight:500;
+      transition:color 0.2s,gap 0.2s;
+    }
+    .article-back:hover{color:var(--accent);gap:0.85rem}
+    .article-back-arrow{font-size:0.8rem}
+
+    .article-share-label{
+      font-size:0.5rem;letter-spacing:0.24em;text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
+    /* ── STATES ───────────────────────────────────────────────── */
+    .article-loading-state{
+      display:flex;align-items:center;justify-content:center;
+      min-height:60vh;
+      flex-direction:column;gap:1rem;
+    }
+    .article-loading-spinner{
+      width:32px;height:32px;
+      border:2px solid var(--border);
+      border-top-color:var(--accent);
+      border-radius:50%;
+      animation:spin 0.8s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .article-loading-text{
+      font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
+    .article-not-found{
+      display:flex;align-items:center;justify-content:center;
+      min-height:60vh;flex-direction:column;gap:0;
+      text-align:center;padding:3rem 2rem;
+    }
+    .article-not-found-code{
+      font-family:var(--font-logo);
+      font-size:clamp(5rem,12vw,9rem);
+      color:var(--white);opacity:0.06;
+      line-height:1;margin-bottom:-1rem;
+      user-select:none;
+    }
+    .article-not-found h2{
+      font-family:var(--font-logo);
+      font-size:clamp(1.5rem,3vw,2.2rem);
+      color:var(--white);margin-bottom:0.75rem;
+    }
+    .article-not-found p{color:var(--text-muted);font-size:0.88rem;margin-bottom:1.75rem}
+    .btn{
+      display:inline-flex;align-items:center;gap:0.4rem;
+      font-size:0.62rem;letter-spacing:0.16em;text-transform:uppercase;
+      padding:0.65rem 1.25rem;
+      border:1px solid var(--border);color:var(--text-muted);
+      background:transparent;
+      transition:border-color 0.25s,color 0.25s;
+      font-weight:500;cursor:pointer;
+    }
+    .btn:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-primary{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#fff;
+    }
+    .btn-primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:#fff}
+
+    /* ── FOOTER ───────────────────────────────────────────────── */
+    footer{
+      border-top:1px solid var(--border);
+      padding:2.5rem;
+      display:flex;align-items:center;justify-content:space-between;
+      flex-wrap:wrap;gap:1rem;
+      max-width:none;
+    }
+    .footer-copy{font-size:0.62rem;color:var(--text-faint)}
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media(max-width:640px){
+      header{padding:0.85rem 1.25rem}
+      nav{display:none}
+      .article-hero-img-wrap{aspect-ratio:4/3}
+      .article-hero-text{padding:2rem 1.25rem 2rem}
+      .article-body{padding:2.5rem 1.25rem 4rem}
+      .article-footer{padding:0 1.25rem 4rem}
+      footer{padding:2rem 1.25rem}
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="header-logo">
+      <img src="../assets/logo.png" alt="Final Corners" width="32" height="32">
+      <span class="header-logo-text">Final Corners</span>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/#music">Music</a>
+      <a href="/news/" class="active">News</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Reading progress bar -->
+  <div id="read-progress" aria-hidden="true">
+    <div id="read-progress-fill"></div>
+  </div>
+
+  <!-- Populated by JS -->
+  <div id="article-root"></div>
+
+  <footer>
+    <p class="footer-copy">&copy; 2025–2026 Final Corners. Bandung, Indonesia.</p>
+    <a href="/news/" style="font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);">← Semua Artikel</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/services.js"></script>
+
+  <script>
+  (async function ArticlePage() {
+    'use strict';
+
+    const root = document.getElementById('article-root');
+
+    // ── Loading state ──────────────────────────────────────────
+    root.innerHTML = `
+      <div class="article-loading-state">
+        <div class="article-loading-spinner"></div>
+        <span class="article-loading-text">Memuat artikel…</span>
+      </div>`;
+
+    // ── Get slug ───────────────────────────────────────────────
+    const params = new URLSearchParams(window.location.search);
+    const slug   = params.get('slug');
+    if (!slug) { renderNotFound(); return; }
+
+    try {
+      const article = await Services.getArticleBySlug(slug);
+      if (!article) { renderNotFound(); return; }
+
+      // ── SEO ─────────────────────────────────────────────────
+      const canonicalUrl = `https://finalcorners.my.id/news/article.html?slug=${slug}`;
+      document.title = article.title + ' — Final Corners';
+      setMeta('description',        article.meta_description || article.title);
+      setMeta('twitter:title',      article.title);
+      setMeta('twitter:description',article.meta_description || '');
+      setOG('og:title',             article.title);
+      setOG('og:description',       article.meta_description || '');
+      setOG('og:url',               canonicalUrl);
+      if (article.featured_image)   setOG('og:image', article.featured_image);
+
+      // canonical
+      let can = document.querySelector('link[rel="canonical"]');
+      if (!can){ can = document.createElement('link'); can.rel='canonical'; document.head.appendChild(can); }
+      can.href = canonicalUrl;
+
+      // JSON-LD NewsArticle
+      const sd = document.createElement('script');
+      sd.type = 'application/ld+json';
+      sd.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type":    "NewsArticle",
+        "headline":      article.title,
+        "description":   article.meta_description || '',
+        "image":         article.featured_image || 'https://finalcorners.my.id/assets/og-image.jpg',
+        "datePublished": article.published_at,
+        "dateModified":  article.updated_at || article.published_at,
+        "url":           canonicalUrl,
+        "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl },
+        "author": {
+          "@type": "MusicGroup",
+          "name": "Final Corners",
+          "url": "https://finalcorners.my.id/"
+        },
+        "publisher": {
+          "@type": "MusicGroup",
+          "name": "Final Corners",
+          "logo": { "@type": "ImageObject", "url": "https://finalcorners.my.id/assets/logo.png" }
+        }
+      });
+      document.head.appendChild(sd);
+
+      // ── Date ────────────────────────────────────────────────
+      const dateStr = article.published_at
+        ? new Date(article.published_at).toLocaleDateString('id-ID',
+            { day:'numeric', month:'long', year:'numeric' })
+        : '';
+
+      // ── Render hero ──────────────────────────────────────────
+      const hasImg = !!(article.featured_image && article.featured_image.trim());
+
+      root.innerHTML = `
+        <!-- HERO -->
+        <div class="article-hero ${hasImg ? '' : 'article-hero--no-img'}">
+          ${hasImg ? `
+          <div class="article-hero-img-wrap">
+            <img src="${esc(article.featured_image)}"
+                 alt="${esc(article.title)}"
+                 loading="eager"
+                 fetchpriority="high">
+          </div>` : ''}
+
+          <div class="article-hero-text">
+            <nav class="article-breadcrumb" aria-label="Breadcrumb">
+              <a href="/">Home</a>
+              <span class="article-breadcrumb-sep">/</span>
+              <a href="/news/">News</a>
+              <span class="article-breadcrumb-sep">/</span>
+              <span>${esc(article.title)}</span>
+            </nav>
+            <span class="article-tag">Final Corners · News</span>
+            <h1 class="article-title">${esc(article.title)}</h1>
+            <div class="article-byline">
+              ${dateStr ? `<span class="article-date" itemprop="datePublished" content="${article.published_at}">${dateStr}</span>` : ''}
+              <span class="article-by">Oleh <strong>Final Corners</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="article-body" itemscope itemtype="https://schema.org/NewsArticle">
+          <meta itemprop="headline"       content="${esc(article.title)}">
+          <meta itemprop="datePublished"  content="${article.published_at||''}">
+          <meta itemprop="dateModified"   content="${article.updated_at||article.published_at||''}">
+          <meta itemprop="url"            content="${canonicalUrl}">
+          ${article.meta_description
+            ? `<p class="article-lead" itemprop="description">${esc(article.meta_description)}</p>`
+            : ''}
+          <div class="article-content" id="article-content" itemprop="articleBody"></div>
+        </div>
+
+        <!-- ARTICLE FOOTER -->
+        <div class="article-footer">
+          <div class="article-footer-inner">
+            <a href="/news/" class="article-back">
+              <span class="article-back-arrow">←</span>
+              Semua Artikel
+            </a>
+            <span class="article-share-label">Final Corners · News</span>
+          </div>
+        </div>
+      `;
+
+      // Inject HTML content safely (it's admin-authored rich text)
+      document.getElementById('article-content').innerHTML = article.content || '';
+
+      // ── Reading progress bar ─────────────────────────────────
+      const progressFill = document.getElementById('read-progress-fill');
+      const articleBody  = document.querySelector('.article-body');
+      if (progressFill && articleBody) {
+        function updateProgress() {
+          const rect   = articleBody.getBoundingClientRect();
+          const total  = rect.height - window.innerHeight;
+          const scrolled = Math.max(0, -rect.top);
+          const pct    = total > 0 ? Math.min(100, (scrolled / total) * 100) : 0;
+          progressFill.style.width = pct + '%';
+        }
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        updateProgress();
+      }
+
+    } catch(err) {
+      console.error('[Article]', err);
+      renderNotFound();
+    }
+
+    // ── helpers ────────────────────────────────────────────────
+    function esc(s){
+      return String(s||'')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderNotFound() {
+      document.title = 'Artikel tidak ditemukan — Final Corners';
+      root.innerHTML = `
+        <div class="article-not-found">
+          <div class="article-not-found-code" aria-hidden="true">404</div>
+          <h2>Artikel tidak ditemukan</h2>
+          <p>Artikel yang kamu cari tidak tersedia atau sudah dipindahkan.</p>
+          <a href="/news/" class="btn btn-primary">← Kembali ke News</a>
+        </div>`;
+    }
+
+    function setMeta(name, content) {
+      let el = document.querySelector(`meta[name="${name}"]`);
+      if (!el){ el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
+      el.content = content;
+    }
+
+    function setOG(property, content) {
+      let el = document.querySelector(`meta[property="${property}"]`);
+      if (!el){ el = document.createElement('meta'); el.setAttribute('property', property); document.head.appendChild(el); }
+      el.content = content;
+    }
+
+  })();
+  </script>
+</body>
+</html>
